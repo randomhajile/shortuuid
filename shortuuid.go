@@ -16,6 +16,19 @@ func (s ShortUUID) String() string {
 	return string(s)
 }
 
+func inBase62Alphabet(r rune) bool {
+	return '0' <= r && r <= '9' || 'A' <= r && r <= 'Z' || 'a' <= r && r <= 'z'
+}
+
+func FromString(s string) (ShortUUID, error) {
+	for _, r := range s {
+		if !inBase62Alphabet(r) {
+			return ShortUUID(""), fmt.Errorf("Rune '%c' not in base62 alphabet", r)
+		}
+	}
+	return ShortUUID(s), nil
+}
+
 func NewV1() ShortUUID {
 	return encode(uuid.NewV1().String(), base62Alphabet)
 }
