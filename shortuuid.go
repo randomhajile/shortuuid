@@ -81,10 +81,7 @@ func (s ShortUUID) UUID() uuid.UUID {
 	}
 
 	bytes := N.Bytes()
-	extraBytes := []byte{}
-	for i := 0; i < 16-len(bytes); i++ {
-		extraBytes = append(extraBytes, byte(0))
-	}
+	extraBytes := make([]byte, 16-len(bytes))
 	res, _ := uuid.FromBytes(append(extraBytes, bytes...))
 
 	return res
