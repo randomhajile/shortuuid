@@ -29,20 +29,23 @@ func FromString(s string) (ShortUUID, error) {
 	return ShortUUID(s), nil
 }
 
-func NewV1() ShortUUID {
-	return encode(uuid.NewV1().String(), base62Alphabet)
+func NewV1() (ShortUUID, error) {
+	u, err := uuid.NewV1()
+	return encode(u.String(), base62Alphabet), err
 }
 
-func NewV2(domain byte) ShortUUID {
-	return encode(uuid.NewV2(domain).String(), base62Alphabet)
+func NewV2(domain byte) (ShortUUID, error) {
+	u, err := uuid.NewV2(domain)
+	return encode(u.String(), base62Alphabet), err
 }
 
 func NewV3(ns uuid.UUID, name string) ShortUUID {
 	return encode(uuid.NewV3(ns, name).String(), base62Alphabet)
 }
 
-func NewV4() ShortUUID {
-	return encode(uuid.NewV4().String(), base62Alphabet)
+func NewV4() (ShortUUID, error) {
+	u, err := uuid.NewV4()
+	return encode(u.String(), base62Alphabet), err
 }
 
 func NewV5(ns uuid.UUID, name string) ShortUUID {

@@ -54,7 +54,10 @@ func TestFromUUID(t *testing.T) {
 }
 
 func TestNewV1(t *testing.T) {
-	s := NewV1()
+	s, err := NewV1()
+	if err != nil {
+		t.Errorf("Unexpected V5 error.")
+	}
 	l := len(s.String())
 	if l < 21 || 22 < l {
 		t.Errorf("Shortened V1 incorrect length.")
@@ -62,7 +65,10 @@ func TestNewV1(t *testing.T) {
 }
 
 func TestNewV4(t *testing.T) {
-	s := NewV4()
+	s, err := NewV4()
+	if err != nil {
+		t.Errorf("Unexpected V5 error.")
+	}
 	l := len(s.String())
 	if l < 21 || 22 < l {
 		t.Errorf("Shortened V4 incorrect length.")
@@ -70,7 +76,8 @@ func TestNewV4(t *testing.T) {
 }
 
 func TestNewV5(t *testing.T) {
-	s := NewV5(uuid.NewV4(), "test")
+	u, _ := uuid.NewV4()
+	s := NewV5(u, "test")
 	l := len(s.String())
 	if l < 21 || 22 < l {
 		t.Errorf("Shortened V5 incorrect length.")
