@@ -56,7 +56,7 @@ func TestFromUUID(t *testing.T) {
 func TestNewV1(t *testing.T) {
 	s, err := NewV1()
 	if err != nil {
-		t.Errorf("Unexpected V5 error.")
+		t.Errorf("Unexpected error generating V1 UUID.")
 	}
 	l := len(s.String())
 	if l < 21 || 22 < l {
@@ -67,7 +67,7 @@ func TestNewV1(t *testing.T) {
 func TestNewV4(t *testing.T) {
 	s, err := NewV4()
 	if err != nil {
-		t.Errorf("Unexpected V5 error.")
+		t.Errorf("Unexpected error generating V4 UUID.")
 	}
 	l := len(s.String())
 	if l < 21 || 22 < l {
