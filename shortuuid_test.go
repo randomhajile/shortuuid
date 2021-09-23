@@ -1,79 +1,72 @@
-package shortuuid
+package shortuuid_test
 
 import (
 	"testing"
 
-	uuid "github.com/satori/go.uuid"
+	uuid "github.com/gofrs/uuid"
+	"github.com/randomhajile/shortuuid"
+	"github.com/stretchr/testify/suite"
 )
 
-type encodeDecodeTest struct {
-	uuid      string
-	shortUUID string
+type shortUUIDTestSuite struct {
+	suite.Suite
+
+	uuid      uuid.UUID
+	shortUUID shortuuid.ShortUUID
 }
 
-var encodeDecodeTestCases = []encodeDecodeTest{
-	encodeDecodeTest{
-		uuid:      "00009272-f1a9-4c18-a964-b78ac3e826ae",
-		shortUUID: "09WquDd4uiDt9eYIxCG",
-	},
-	encodeDecodeTest{
-		uuid:      "0002377a-e9e3-477f-ba9a-2578a47d6160",
-		shortUUID: "yEuM5wguKI3G9Jed8o01",
-	},
+func TestShortUUIDTestSuite(t *testing.T) {
+	suite.Run(t, new(shortUUIDTestSuite))
 }
 
-func (testCase encodeDecodeTest) TestEncode(t *testing.T) {
-	uuid, err := uuid.FromString(testCase.uuid)
-	if err != nil {
-		t.Errorf("Bad encode test string %s.", testCase.uuid)
-	}
-	s := FromUUID(uuid)
-	if s.String() != testCase.shortUUID {
-		t.Errorf("Encoding error for %s. Got %s expected %s", testCase.uuid, s.String(), testCase.shortUUID)
-	}
+func (suite *shortUUIDTestSuite) SetupTest() {
+	suite.uuid, _ = uuid.FromString("00009272-f1a9-4c18-a964-b78ac3e826ae")
+	suite.shortUUID, _ = shortuuid.FromString("09WquDd4uiDt9eYIxCG")
 }
 
-func (testCase encodeDecodeTest) TestDecode(t *testing.T) {
-	s := ShortUUID(testCase.shortUUID)
-	u := s.UUID().String()
-	if u != testCase.uuid {
-		t.Errorf("Decoding error for %s. Got %s expected %s", testCase.shortUUID, u, testCase.uuid)
-	}
+func (suite *shortUUIDTestSuite) TestEncode() {
+	uuid, err := uuid.FromString(suite.uuid.String())
+	suite.NoError(err)
+
+	shortUUID := shortuuid.FromUUID(uuid)
+	suite.Equal(suite.shortUUID, shortUUID)
 }
 
-func TestUUID(t *testing.T) {
-	for _, testCase := range encodeDecodeTestCases {
-		testCase.TestDecode(t)
-	}
+func (suite *shortUUIDTestSuite) TestEncodeError() {
+	_, err := shortuuid.FromString("!@#$%^&*()")
+	suite.Error(err)
 }
 
-func TestFromUUID(t *testing.T) {
-	for _, testCase := range encodeDecodeTestCases {
-		testCase.TestEncode(t)
-	}
+func (suite *shortUUIDTestSuite) TestDecode() {
+	suite.Equal(suite.uuid, suite.shortUUID.UUID())
 }
 
-func TestNewV1(t *testing.T) {
-	s := NewV1()
+func (suite *shortUUIDTestSuite) TestNewV1() {
+	s, err := shortuuid.NewV1()
+	suite.NoError(err)
+
 	l := len(s.String())
-	if l < 21 || 22 < l {
-		t.Errorf("Shortened V1 incorrect length.")
-	}
+	suite.True(l == 21 || l == 22)
 }
 
-func TestNewV4(t *testing.T) {
-	s := NewV4()
+func (suite *shortUUIDTestSuite) TestNewV3() {
+	s := shortuuid.NewV3(suite.uuid, "name")
+
 	l := len(s.String())
-	if l < 21 || 22 < l {
-		t.Errorf("Shortened V4 incorrect length.")
-	}
+	suite.True(l == 21 || l == 22)
 }
 
-func TestNewV5(t *testing.T) {
-	u := uuid.NewV4()
-	s := NewV5(u, "test")
+func (suite *shortUUIDTestSuite) TestNewV4() {
+	s, err := shortuuid.NewV4()
+	suite.NoError(err)
+
 	l := len(s.String())
-	if l < 21 || 22 < l {
-		t.Errorf("Shortened V5 incorrect length.")
-	}
+	suite.True(l == 21 || l == 22)
+}
+
+func (suite *shortUUIDTestSuite) TestNewV5() {
+	s := shortuuid.NewV5(suite.uuid, "name")
+
+	l := len(s.String())
+	suite.True(l == 21 || l == 22)
 }
