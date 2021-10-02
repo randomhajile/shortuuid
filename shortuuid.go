@@ -5,11 +5,12 @@ import (
 	"math/big"
 	"strings"
 
-	uuid "github.com/satori/go.uuid"
+	uuid "github.com/gofrs/uuid"
 )
 
 const base62Alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
+// ShortUUID type for working with ShortUUIDs.
 type ShortUUID string
 
 func (s ShortUUID) String() string {
@@ -20,6 +21,7 @@ func inBase62Alphabet(r rune) bool {
 	return '0' <= r && r <= '9' || 'A' <= r && r <= 'Z' || 'a' <= r && r <= 'z'
 }
 
+// FromString returns a ShortUUID from a string representation.
 func FromString(s string) (ShortUUID, error) {
 	for _, r := range s {
 		if !inBase62Alphabet(r) {
@@ -29,25 +31,30 @@ func FromString(s string) (ShortUUID, error) {
 	return ShortUUID(s), nil
 }
 
-func NewV1() ShortUUID {
-	u := uuid.NewV1()
-	return encode(u.String(), base62Alphabet)
+// NewV1 returns a ShortUUID based on a V1 UUID.
+func NewV1() (ShortUUID, error) {
+	u, err := uuid.NewV1()
+	if err != nil {
+		return "", err
+	}
+	return encode(u.String(), base62Alphabet), nil
 }
 
-func NewV2(domain byte) ShortUUID {
-	u := uuid.NewV2(domain)
-	return encode(u.String(), base62Alphabet)
-}
-
+// NewV3 returns a ShortUUID based on a V3 UUID.
 func NewV3(ns uuid.UUID, name string) ShortUUID {
 	return encode(uuid.NewV3(ns, name).String(), base62Alphabet)
 }
 
-func NewV4() ShortUUID {
-	u := uuid.NewV4()
-	return encode(u.String(), base62Alphabet)
+// NewV4 returns a ShortUUID based on a V4 UUID.
+func NewV4() (ShortUUID, error) {
+	u, err := uuid.NewV4()
+	if err != nil {
+		return "", err
+	}
+	return encode(u.String(), base62Alphabet), nil
 }
 
+// NewV5 returns a ShortUUID based on a V5 UUID.
 func NewV5(ns uuid.UUID, name string) ShortUUID {
 	return encode(uuid.NewV5(ns, name).String(), base62Alphabet)
 }
@@ -73,6 +80,7 @@ func encode(s, alphabet string) ShortUUID {
 	return ShortUUID(strings.Join(output, ""))
 }
 
+// UUID converts a ShortUUID into a UUID.
 func (s ShortUUID) UUID() uuid.UUID {
 	runes := []rune(string(s))
 	N := new(big.Int)
@@ -90,6 +98,7 @@ func (s ShortUUID) UUID() uuid.UUID {
 	return res
 }
 
+// FromUUID converts a UUID into a ShortUUID.
 func FromUUID(u uuid.UUID) ShortUUID {
 	return encode(u.String(), base62Alphabet)
 }
