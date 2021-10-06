@@ -1,4 +1,4 @@
-module github.com/randomhajile/shortuuid
+module github.com/randomhajile/shortuuid/v2
 
 go 1.14
 

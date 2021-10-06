@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	uuid "github.com/gofrs/uuid"
-	"github.com/randomhajile/shortuuid"
+	"github.com/randomhajile/shortuuid/v2"
 	"github.com/stretchr/testify/suite"
 )
 
